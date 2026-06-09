@@ -1,4 +1,4 @@
-package Day1;
+
 import java.util.Scanner;
 public class AverageOfThree {
     public static void main(String[] args) {
