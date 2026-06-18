@@ -1,3 +1,4 @@
+package io;
 import java.io.*;
 import java.util.Scanner;
 
@@ -11,7 +12,7 @@ public class ExpenseLogger {
             
             System.out.println("Number of expenses to log: ");
             int n = sc.nextInt();
-            
+
             sc.nextLine(); // consume the newline character
             for (int i = 0; i < n; i++) {
 
