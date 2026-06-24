@@ -1,6 +1,0 @@
-food - 200
-travel - 400
-travel - 300
-food - 500
-walk 200 - 60
-y - 90
