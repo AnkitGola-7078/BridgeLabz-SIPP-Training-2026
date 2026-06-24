@@ -17,6 +17,7 @@ class Person {
 }
 
 class Chef extends Person implements Worker {
+    
     public Chef(String name, int id) {
         super(name, id);
     }
