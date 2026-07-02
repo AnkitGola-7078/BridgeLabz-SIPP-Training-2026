@@ -62,6 +62,6 @@ public class TrafficMonitoringSystem {
         tms.generateReport();
     }
 }
- {
+ 
     
-}
+
