@@ -1,3 +1,4 @@
+package TwoPointer_SlidingWindow;
 public class findPairSums{
 
     // Scenario 1: Pair Sum — Fraud Detection in Transaction Logs

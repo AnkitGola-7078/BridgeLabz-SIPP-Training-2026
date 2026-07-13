@@ -1,4 +1,4 @@
-package Sliding_Window;
+package TwoPointer_SlidingWindow;
 
 import java.util.HashMap;
 import java.util.Map;
