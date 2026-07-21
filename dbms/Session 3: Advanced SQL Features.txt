@@ -1,0 +1,146 @@
+Session 3: Advanced SQL Features
+Assignment: COVID-19 Dataset
+
+------------------------------------------------------------
+Use Case 21: Create View for Latest COVID Data
+
+Objective:
+Provide a simplified, up-to-date view of the most critical COVID data.
+
+Task:
+Create a view that displays the most recent confirmed cases, deaths, and recoveries for each country.
+
+SQL:
+CREATE VIEW latest_covid_data AS
+SELECT c.country,
+       c.confirmed_cases,
+       c.deaths,
+       c.recoveries
+FROM covid_cases c
+WHERE c.date = (
+    SELECT MAX(date)
+    FROM covid_cases c2
+    WHERE c2.country = c.country
+);
+
+------------------------------------------------------------
+Use Case 22: Build Mortality Rate Function
+
+Objective:
+Reusable calculation for mortality rates.
+
+Task:
+Create UDF CalculateMortalityRate().
+
+SQL:
+DELIMITER //
+CREATE FUNCTION CalculateMortalityRate(p_country VARCHAR(100), p_date DATE)
+RETURNS DECIMAL(5,2)
+DETERMINISTIC
+BEGIN
+    DECLARE mortality_rate DECIMAL(5,2);
+    SELECT (deaths/confirmed_cases*100)
+    INTO mortality_rate
+    FROM covid_cases
+    WHERE country = p_country AND date = p_date;
+    RETURN mortality_rate;
+END //
+DELIMITER ;
+
+------------------------------------------------------------
+Use Case 23: Create Stored Procedure for Data Updates
+
+Objective:
+Ensure data integrity when updating multiple related statistics.
+
+Task:
+Write stored procedure UpdateCovidStats().
+
+SQL:
+DELIMITER //
+CREATE PROCEDURE UpdateCovidStats(
+    IN p_country VARCHAR(100),
+    IN p_date DATE,
+    IN p_confirmed INT,
+    IN p_deaths INT,
+    IN p_recoveries INT
+)
+BEGIN
+    UPDATE covid_cases
+    SET confirmed_cases = p_confirmed,
+        deaths = p_deaths,
+        recoveries = p_recoveries,
+        last_updated = CURRENT_TIMESTAMP
+    WHERE country = p_country AND date = p_date;
+END //
+DELIMITER ;
+
+------------------------------------------------------------
+Use Case 24: Implement Recovery Rate Function
+
+Objective:
+Reusable function to calculate recovery progress.
+
+Task:
+Create function CalculateRecoveryRate().
+
+SQL:
+DELIMITER //
+CREATE FUNCTION CalculateRecoveryRate(p_country VARCHAR(100), p_date DATE)
+RETURNS DECIMAL(5,2)
+DETERMINISTIC
+BEGIN
+    DECLARE recovery_rate DECIMAL(5,2);
+    SELECT (recoveries/confirmed_cases*100)
+    INTO recovery_rate
+    FROM covid_cases
+    WHERE country = p_country AND date = p_date;
+    RETURN recovery_rate;
+END //
+DELIMITER ;
+
+------------------------------------------------------------
+Use Case 25: Create Audit Trigger for Data Changes
+
+Objective:
+Maintain a history of data changes for auditing.
+
+Task:
+Build BEFORE UPDATE trigger on covid_cases.
+
+SQL:
+CREATE TABLE covid_audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    country VARCHAR(100),
+    date DATE,
+    old_confirmed INT,
+    new_confirmed INT,
+    old_deaths INT,
+    new_deaths INT,
+    old_recoveries INT,
+    new_recoveries INT,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER //
+CREATE TRIGGER before_update_covid
+BEFORE UPDATE ON covid_cases
+FOR EACH ROW
+BEGIN
+    INSERT INTO covid_audit(
+        country, date,
+        old_confirmed, new_confirmed,
+        old_deaths, new_deaths,
+        old_recoveries, new_recoveries
+    )
+    VALUES(
+        OLD.country, OLD.date,
+        OLD.confirmed_cases, NEW.confirmed_cases,
+        OLD.deaths, NEW.deaths,
+        OLD.recoveries, NEW.recoveries
+    );
+END //
+DELIMITER ;
+
+------------------------------------------------------------
+
